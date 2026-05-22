@@ -189,74 +189,121 @@ const steps = [
     title: "Sales Cycle Planning",
     priority: "Must Have",
     meta: "Cycle actions, priorities, training, launches",
+    module: "Planning Hub",
     detail: [
-      ["Cycle Pack", "May focus is heat pump upsell, Bulla 280L launch, and RSS stock health."],
-      ["Rep Prompt", "Review customer activity calendar, national priorities, and local campaign tasks before arriving."],
+      { label: "Cycle Pack", text: "May focus is heat pump upsell, Bulla 280L launch, and RSS stock health.", status: "Ready" },
+      { label: "Priority Actions", text: "Review customer activity calendar, national priorities, trade marketing activities, and training tasks before arriving.", status: "Queued" },
+      { label: "NPD Launch", text: "Bulla 280L R290 collateral loaded for branch discussion.", status: "Ready" },
     ],
   },
   {
     title: "Call Planning",
     priority: "Must Have",
     meta: "Visit schedule and branch objective",
+    module: "Visit Planner",
     detail: [
-      ["Objective", "Secure replenishment for urgent stock gaps and book a 20-minute staff training session."],
-      ["Call Cadence", "Fortnightly visit because the branch is high importance and trading below region this month."],
+      { label: "Visit Objective", text: "Secure replenishment for urgent stock gaps and book a 20-minute staff training session.", status: "Primary" },
+      { label: "Call Cadence", text: "Fortnightly visit because the branch is high importance and trading below region this month.", status: "Due now" },
+      { label: "Escalation", text: "If order approval stalls, escalate to NSW State GM with quote and gap evidence.", status: "Defined" },
     ],
   },
   {
     title: "Customer Profile",
     priority: "Must Have",
     meta: "Segmentation and rapport",
+    module: "Segmentation and Profile",
     detail: [
-      ["Segment", "RSS branch, high value, medium churn risk, plumbing and hot water specialist audience."],
-      ["Greeting Note", "Store manager Sam follows NRL and prefers a concise visit with clear order recommendations."],
+      { label: "Segment", text: "RSS branch, high value, medium churn risk, plumbing and hot water specialist audience.", status: "High importance" },
+      { label: "Call Frequency", text: "Fortnightly. Increase to weekly while branch is below region for two consecutive months.", status: "Recommended" },
+      { label: "Greeting Note", text: "Store manager Sam follows NRL and prefers a concise visit with clear order recommendations.", status: "Should Have" },
     ],
   },
   {
     title: "Stock Take",
     priority: "Must Have",
     meta: "SKU gaps and ranged product checks",
+    module: "Stock Take and Order Recommendation",
     detail: [
-      ["Urgent Gaps", "Rheem 250L Heat Pump, Stellar 315L, and Longhorn accessory kit are below target holding."],
-      ["Recommendation", "Add 7 units across urgent SKUs for a projected $18.7K replenishment order."],
+      { label: "Urgent Gaps", text: "Rheem 250L Heat Pump, Stellar 315L, and Longhorn accessory kit are below target holding.", status: "7 SKUs" },
+      { label: "Usually Carried, Out of Stock", text: "Stellar 315L has been stocked on 8 of the last 10 visits and is currently at zero.", status: "Action" },
+      { label: "Recommended Order", text: "Add 7 units across urgent SKUs for a projected $18.7K replenishment order.", status: "$18.7K" },
     ],
   },
   {
     title: "Sales Review",
     priority: "Must Have",
     meta: "MTD, YTD, region and national comparison",
+    module: "Sales Benchmarking",
     detail: [
-      ["Trading View", "YTD is +8.4% versus prior year, but MTD is -3.1% versus region."],
-      ["Conversation Starter", "Heat pump category is outperforming, while gas storage is lagging the national benchmark."],
+      { label: "Trading View", text: "YTD is +8.4% versus prior year, but MTD is -3.1% versus region.", status: "Mixed" },
+      { label: "Category Signal", text: "Heat pump category is outperforming, while gas storage is lagging the national benchmark.", status: "Insight" },
+      { label: "Comparator", text: "Parramatta is below NSW RSS average on gas storage by $21K MTD.", status: "Benchmark" },
     ],
   },
   {
     title: "Promotions and Training",
     priority: "Should Have",
     meta: "Campaigns, rewards, news, enablement",
+    module: "Enablement Tasks",
     detail: [
-      ["Promotion", "Share May hot water specialist rebate and June Longhorn launch collateral."],
-      ["Training", "Book Heat Pumps 101 for counter staff and capture attendance in the visit notes."],
+      { label: "Promotion", text: "Share May hot water specialist rebate and June Longhorn launch collateral.", status: "Active" },
+      { label: "Training", text: "Book Heat Pumps 101 for counter staff and capture attendance in the visit notes.", status: "Book" },
+      { label: "Rewards", text: "Prompt branch to sign up 5 new Rheem Rewards members this month.", status: "Plumber channel" },
     ],
   },
   {
     title: "Competitor Capture",
     priority: "Must Have",
     meta: "Price points and screenshot upload",
+    module: "Competitor Price Capture",
     detail: [
-      ["Target", "Capture at least 5 competitor SKUs, invoice price, shelf price, and multi-buy price."],
-      ["Dummy Capture", "Thermann 250L HP: shelf $3,099, multi-buy $2,940, screenshot attached."],
+      { label: "Capture Target", text: "Capture at least 5 competitor SKUs, invoice price, shelf price, and multi-buy price.", status: "5 required" },
+      { label: "Dummy Capture", text: "Thermann 250L HP: shelf $3,099, multi-buy $2,940, screenshot attached.", status: "Saved" },
+      { label: "Reporting Path", text: "Price records flow to state and national competitor analysis.", status: "Reportable" },
     ],
   },
   {
     title: "Quote and Follow-up",
     priority: "Must Have",
     meta: "Professional quote and next actions",
+    module: "Quote, Notes and Reporting",
     detail: [
-      ["Quote", "Generate customer-ready PDF quote for the recommended replenishment order."],
-      ["Follow-up", "Send quote, log visit notes, create training task, and schedule the next fortnightly visit."],
+      { label: "Quote", text: "Generate customer-ready quote for the recommended replenishment order.", status: "Draft ready" },
+      { label: "Follow-up", text: "Send quote, log visit notes, create training task, and schedule the next fortnightly visit.", status: "4 actions" },
+      { label: "Custom Reports", text: "Visit completion, stock gaps, competitor prices, training bookings, and value-added order reporting.", status: "Other Haves" },
     ],
   },
+];
+
+const stockRows = [
+  ["Rheem 250L Heat Pump", "Target 4", "On hand 1", "Recommend 3"],
+  ["Stellar 315L", "Target 2", "On hand 0", "Recommend 2"],
+  ["Longhorn Accessory Kit", "Target 5", "On hand 3", "Recommend 2"],
+];
+
+const salesRows = [
+  ["Heat Pumps", "$312K", "+18.2%", "+6.4% vs region"],
+  ["Gas Storage", "$221K", "-4.8%", "-$21K vs region"],
+  ["Continuous Flow", "$418K", "+7.1%", "+1.2% vs national"],
+];
+
+const competitorRows = [
+  ["Thermann 250L HP", "$2,940", "$3,099", "Screenshot saved"],
+  ["Rinnai 26L", "$1,145", "$1,249", "Needs invoice"],
+  ["Emerald Energy 250L", "$2,720", "$2,899", "Verified"],
+];
+
+const coverage = [
+  ["Sales cycle planning", "Planning Hub", "Must Have"],
+  ["Call planning", "Visit Planner", "Must Have"],
+  ["Customer segmentation and profiling", "Segmentation and Profile", "Must Have"],
+  ["Stock check and stock history", "Stock Take and Order Recommendation", "Must Have"],
+  ["Recommended order", "Stock Take and Order Recommendation", "Must Have"],
+  ["Sales review and comparators", "Sales Benchmarking", "Must Have"],
+  ["Promotions, rewards, training and news", "Enablement Tasks", "Should Have"],
+  ["Competitor SKU and price capture", "Competitor Price Capture", "Must Have"],
+  ["Quotes and customer-ready output", "Quote, Notes and Reporting", "Must Have"],
+  ["Reports, mobile access, pricing, surveys, customer risk", "Traceability and responsive UI", "Other Haves"],
 ];
 
 const activities = [
@@ -346,12 +393,111 @@ function selectStep(index) {
 
   const step = steps[index];
   document.querySelector("#selectedStepTitle").textContent = step.title;
-  document.querySelector("#selectedStepDetail").innerHTML = step.detail
+  document.querySelector("#selectedStepDetail").innerHTML = `
+    <div class="module-summary">
+      <span>${step.module}</span>
+      <strong>${step.priority}</strong>
+    </div>
+    <div class="detail-card-grid">
+      ${step.detail
+        .map(
+          (item) => `
+            <article class="detail-row">
+              <div class="detail-row-heading">
+                <strong>${item.label}</strong>
+                <span class="tag">${item.status}</span>
+              </div>
+              <p>${item.text}</p>
+            </article>
+          `,
+        )
+        .join("")}
+    </div>
+    ${renderModuleWorkspace(step.title)}
+  `;
+}
+
+function renderRows(rows) {
+  return `
+    <div class="data-table">
+      ${rows
+        .map(
+          (row) => `
+            <div class="data-row">
+              ${row.map((cell) => `<span>${cell}</span>`).join("")}
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderModuleWorkspace(title) {
+  if (title === "Stock Take") {
+    return `
+      <section class="module-workspace">
+        <h3>Live stock take</h3>
+        ${renderRows(stockRows)}
+        <button type="button">Create recommended order</button>
+      </section>
+    `;
+  }
+
+  if (title === "Sales Review") {
+    return `
+      <section class="module-workspace">
+        <h3>Sales review by category</h3>
+        ${renderRows(salesRows)}
+        <button type="button">Add benchmark note</button>
+      </section>
+    `;
+  }
+
+  if (title === "Competitor Capture") {
+    return `
+      <section class="module-workspace">
+        <h3>Competitor price capture</h3>
+        ${renderRows(competitorRows)}
+        <button type="button">Upload price screenshot</button>
+      </section>
+    `;
+  }
+
+  if (title === "Quote and Follow-up") {
+    return `
+      <section class="module-workspace">
+        <h3>Follow-up actions</h3>
+        <div class="action-checklist">
+          <label><input type="checkbox" checked /> Generate replenishment quote</label>
+          <label><input type="checkbox" checked /> Email quote to customer</label>
+          <label><input type="checkbox" /> Create training task</label>
+          <label><input type="checkbox" /> Schedule next visit</label>
+        </div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="module-workspace">
+      <h3>Rep actions</h3>
+      <div class="action-checklist">
+        <label><input type="checkbox" checked /> Review requirement-led data</label>
+        <label><input type="checkbox" /> Capture customer note</label>
+        <label><input type="checkbox" /> Add follow-up task</label>
+      </div>
+    </section>
+  `;
+}
+
+function renderCoverage() {
+  document.querySelector("#coverageGrid").innerHTML = coverage
     .map(
-      ([label, text]) => `
-        <article class="detail-row">
-          <strong>${label}</strong>
-          <p>${text}</p>
+      ([requirement, capability, priority]) => `
+        <article class="coverage-card">
+          <span class="tag">${priority}</span>
+          <strong>${capability}</strong>
+          <p>${requirement}</p>
         </article>
       `,
     )
@@ -389,3 +535,4 @@ document.querySelectorAll("[data-view]").forEach((button) => {
 renderRequirements();
 renderSteps();
 renderActivityCalendar();
+renderCoverage();
