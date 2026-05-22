@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rheem Call Steps Planner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">R</div>
+        <div>
+          <p>Rheem CRM</p>
+          <strong>Call Steps Planner</strong>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="Primary">
+        <a href="#dashboard" class="active">Dashboard</a>
+        <a href="#call-flow">Call Flow</a>
+        <a href="#requirements">Requirements</a>
+        <a href="#activity">Activity Calendar</a>
+      </nav>
+
+      <div class="rep-card">
+        <span class="eyebrow">Field Rep</span>
+        <strong>Alex Morgan</strong>
+        <p>NSW Plumbing Channel</p>
+      </div>
+    </aside>
+
+    <main>
+      <section id="dashboard" class="topbar">
+        <div>
+          <span class="eyebrow">Visit Workspace</span>
+          <h1>Branch visit plan and execution</h1>
+        </div>
+        <div class="top-actions" aria-label="Visit actions">
+          <button type="button" data-view="today">Today</button>
+          <button type="button" data-view="week">Week</button>
+          <button type="button" data-view="cycle" class="selected">Cycle</button>
+        </div>
+      </section>
+
+      <section class="customer-panel" aria-label="Selected customer">
+        <div class="customer-hero">
+          <div>
+            <span class="eyebrow">Next Visit</span>
+            <h2>Tradelink Parramatta</h2>
+            <p>RSS branch | High importance | Fortnightly call cycle</p>
+          </div>
+          <div class="risk-pill">At risk: Medium</div>
+        </div>
+        <div class="metric-grid">
+          <article>
+            <span>YTD Sales</span>
+            <strong>$1.28M</strong>
+            <small>+8.4% vs YA</small>
+          </article>
+          <article>
+            <span>MTD Sales</span>
+            <strong>$146K</strong>
+            <small>-3.1% vs region</small>
+          </article>
+          <article>
+            <span>Stock Gaps</span>
+            <strong>7 SKUs</strong>
+            <small>3 urgent replenishments</small>
+          </article>
+          <article>
+            <span>Next Best Order</span>
+            <strong>$18.7K</strong>
+            <small>Projected value add</small>
+          </article>
+        </div>
+      </section>
+
+      <section id="call-flow" class="workspace-grid">
+        <div class="panel call-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Template Driven</span>
+              <h2>Steps of the call</h2>
+            </div>
+            <button type="button">Start Visit</button>
+          </div>
+          <ol class="step-list" id="stepList"></ol>
+        </div>
+
+        <div class="panel detail-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Live Visit Notes</span>
+              <h2 id="selectedStepTitle">Sales Cycle Planning</h2>
+            </div>
+            <span class="status-dot">Ready</span>
+          </div>
+          <div id="selectedStepDetail" class="detail-body"></div>
+        </div>
+      </section>
+
+      <section id="requirements" class="requirements-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Requirement Priority</span>
+            <h2>Must Have, Should Have, Other Haves</h2>
+          </div>
+          <label class="search-box">
+            <span>Search</span>
+            <input id="requirementSearch" type="search" placeholder="Category or requirement" />
+          </label>
+        </div>
+        <div class="requirements-grid">
+          <section class="priority-column must">
+            <header>
+              <span class="priority-label">Must Have</span>
+              <strong id="mustCount">0</strong>
+            </header>
+            <div id="mustList" class="requirement-list"></div>
+          </section>
+          <section class="priority-column should">
+            <header>
+              <span class="priority-label">Should Have</span>
+              <strong id="shouldCount">0</strong>
+            </header>
+            <div id="shouldList" class="requirement-list"></div>
+          </section>
+          <section class="priority-column other">
+            <header>
+              <span class="priority-label">Other Haves</span>
+              <strong id="otherCount">0</strong>
+            </header>
+            <div id="otherList" class="requirement-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="activity" class="activity-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Dummy Data</span>
+            <h2>Cycle activity calendar</h2>
+          </div>
+          <div class="legend">
+            <span><i class="swatch launch"></i>NPD</span>
+            <span><i class="swatch training"></i>Training</span>
+            <span><i class="swatch reward"></i>Rewards</span>
+          </div>
+        </div>
+        <div class="calendar-table" id="activityCalendar"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
