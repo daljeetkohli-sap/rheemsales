@@ -892,6 +892,23 @@ h2 {
   flex-wrap: wrap;
 }
 
+.operation-help,
+.operation-log {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.operation-help p,
+.operation-log span {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .calendar-table tr:last-child td {
   border-bottom: 0;
 }

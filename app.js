@@ -862,16 +862,30 @@ function selectCalendarActivity(activity) {
     <span class="eyebrow">${activity.month} Activity</span>
     <h3>${activity.activity}</h3>
     <p>${activity.detail}</p>
+    <div class="operation-help">
+      <strong>Available operations</strong>
+      <p><b>Open ${moduleName}</b> takes you to the working module for this activity. <b>Add to visit plan</b> creates a saved task for the selected customer and shows it in Dashboard activity.</p>
+    </div>
     <div class="calendar-actions">
       <button type="button" id="openCalendarModuleBtn">Open ${moduleName}</button>
       <button type="button" id="saveCalendarActivityBtn">Add to visit plan</button>
     </div>
+    <div class="operation-log" id="calendarOperationLog">
+      <strong>No operation run yet</strong>
+      <span>Use one of the buttons above to navigate or create a saved task.</span>
+    </div>
   `;
   document.querySelector("#openCalendarModuleBtn").addEventListener("click", () => {
+    addRecord("Opened module", `${activity.month}: ${moduleName} opened from calendar`);
+    showToast(`Opening ${moduleName}`);
     selectStep(Math.max(moduleIndex, 0));
   });
   document.querySelector("#saveCalendarActivityBtn").addEventListener("click", () => {
     addRecord("Calendar activity", `${activity.month}: ${activity.activity} - ${activity.detail}`);
+    document.querySelector("#calendarOperationLog").innerHTML = `
+      <strong>Task saved</strong>
+      <span>${activity.activity} for ${activity.month} has been added to ${customers[selectedCustomerIndex].name}'s visit plan. You can see it on Dashboard > Saved activity and Reports > Saved Records.</span>
+    `;
     showToast(`${activity.activity} added to visit plan`);
   });
 }
