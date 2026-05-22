@@ -45,6 +45,24 @@
         </div>
       </section>
 
+      <section class="requirement-trace app-screen active" data-screen-section="dashboard">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Requirements First</span>
+            <h2>Click a requirement to trace it into the app</h2>
+          </div>
+          <button type="button" data-screen="requirements">View all requirements</button>
+        </div>
+        <div class="requirement-trace-layout">
+          <div class="dashboard-requirements" id="dashboardRequirements"></div>
+          <aside class="trace-panel" id="tracePanel" aria-live="polite">
+            <span class="eyebrow">Trace Result</span>
+            <h3>Select a requirement</h3>
+            <p>The linked module and visit operation will appear here.</p>
+          </aside>
+        </div>
+      </section>
+
       <section class="customer-panel app-screen active" aria-label="Selected customer" data-screen-section="dashboard">
         <div class="customer-hero">
           <div>

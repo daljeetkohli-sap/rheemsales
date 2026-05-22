@@ -230,6 +230,7 @@ let generatedOrder = null;
 let quoteReady = false;
 let activeTimeframe = "cycle";
 let selectedCalendarActivity = null;
+let selectedRequirementIndex = 0;
 const completedSteps = new Set();
 const savedRecords = [];
 
@@ -379,6 +380,19 @@ const coverage = [
   ["Reports, mobile access, pricing, surveys, customer risk", "Traceability and responsive UI", "Other Haves"],
 ];
 
+function getRequirementStepIndex(requirement) {
+  const text = `${requirement.category} ${requirement.requirement}`.toLowerCase();
+  if (text.includes("sales cycle")) return 0;
+  if (text.includes("call planning") || text.includes("call cycle")) return 1;
+  if (text.includes("segment") || text.includes("profile") || text.includes("greeting")) return 2;
+  if (text.includes("stock") || text.includes("order")) return 3;
+  if (text.includes("sales review") || text.includes("purchase data")) return 4;
+  if (text.includes("promotion") || text.includes("training") || text.includes("rewards") || text.includes("rapid") || text.includes("news")) return 5;
+  if (text.includes("competitor")) return 6;
+  if (text.includes("quote") || text.includes("report") || text.includes("crm") || text.includes("mobile") || text.includes("pricing") || text.includes("surveys") || text.includes("risk")) return 7;
+  return 1;
+}
+
 const activities = [
   ["Stock Check", "", "", "", "", "Priority branch audit", "", "", "", "", "", "", ""],
   ["Recommended Order", "", "Heat pump top-up", "", "", "", "Longhorn launch order", "", "", "", "", "", ""],
@@ -408,8 +422,10 @@ const byPriority = {
 };
 
 function createRequirementCard(item) {
-  const card = document.createElement("article");
+  const card = document.createElement("button");
+  card.type = "button";
   card.className = "requirement-card";
+  card.dataset.requirementIndex = item.index;
   card.innerHTML = `
     <h3>${item.category}</h3>
     <p>${item.requirement}</p>
@@ -419,7 +435,75 @@ function createRequirementCard(item) {
       ${item.feedback ? `<span class="tag">${item.feedback}</span>` : ""}
     </div>
   `;
+  card.addEventListener("click", () => {
+    traceRequirement(item.index);
+    switchScreen("dashboard");
+  });
   return card;
+}
+
+function renderDashboardRequirements() {
+  const featured = requirements
+    .map((requirement, index) => ({ ...requirement, index, stepIndex: getRequirementStepIndex(requirement) }))
+    .filter((requirement) => requirement.priority === "Must Have" || requirement.priority === "Should Have")
+    .slice(0, 12);
+
+  document.querySelector("#dashboardRequirements").innerHTML = featured
+    .map(
+      (requirement) => `
+        <button type="button" class="trace-requirement ${requirement.index === selectedRequirementIndex ? "selected" : ""}" data-requirement-index="${requirement.index}">
+          <span>${requirement.priority}</span>
+          <strong>${requirement.category || "Requirement"}</strong>
+          <small>${requirement.requirement}</small>
+        </button>
+      `,
+    )
+    .join("");
+
+  document.querySelectorAll("[data-requirement-index]").forEach((button) => {
+    button.addEventListener("click", () => traceRequirement(Number(button.dataset.requirementIndex)));
+  });
+
+  traceRequirement(selectedRequirementIndex, false);
+}
+
+function traceRequirement(index, announce = true) {
+  selectedRequirementIndex = index;
+  const requirement = requirements[index];
+  const stepIndex = getRequirementStepIndex(requirement);
+  const step = steps[stepIndex];
+
+  document.querySelectorAll("[data-requirement-index]").forEach((button) => {
+    button.classList.toggle("selected", Number(button.dataset.requirementIndex) === index);
+  });
+
+  document.querySelector("#tracePanel").innerHTML = `
+    <span class="eyebrow">${requirement.priority}</span>
+    <h3>${requirement.category || "Requirement"}</h3>
+    <p>${requirement.requirement}</p>
+    <div class="trace-result">
+      <strong>Traced to app module</strong>
+      <span>${step.title} - ${step.module}</span>
+    </div>
+    <div class="trace-actions">
+      <button type="button" id="openTracedModuleBtn">Open traced module</button>
+      <button type="button" id="saveTraceBtn">Save trace to activity</button>
+    </div>
+  `;
+
+  document.querySelector("#openTracedModuleBtn").addEventListener("click", () => {
+    addRecord("Requirement traced", `${requirement.category || "Requirement"} opened ${step.title}`);
+    selectStep(stepIndex);
+  });
+
+  document.querySelector("#saveTraceBtn").addEventListener("click", () => {
+    addRecord("Requirement trace saved", `${requirement.category || "Requirement"} -> ${step.title}`);
+    showToast("Requirement trace saved to Dashboard activity");
+  });
+
+  if (announce) {
+    showToast(`Requirement traced to ${step.title}`);
+  }
 }
 
 function renderRequirements(term = "") {
@@ -428,7 +512,7 @@ function renderRequirements(term = "") {
   });
 
   const normalized = term.trim().toLowerCase();
-  const filtered = requirements.filter((item) => {
+  const filtered = requirements.map((item, index) => ({ ...item, index })).filter((item) => {
     const haystack = `${item.category} ${item.requirement} ${item.feedback}`.toLowerCase();
     return haystack.includes(normalized);
   });
@@ -954,6 +1038,7 @@ document.querySelector("#startVisitBtn").addEventListener("click", () => {
 });
 
 renderCustomers();
+renderDashboardRequirements();
 renderRequirements();
 renderSteps();
 renderActivityCalendar();

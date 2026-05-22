@@ -668,6 +668,87 @@ h2 {
   gap: 16px;
 }
 
+.requirement-trace {
+  gap: 16px;
+}
+
+.requirement-trace-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  gap: 16px;
+}
+
+.dashboard-requirements {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  max-height: 340px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.trace-requirement {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 142px;
+  padding: 12px;
+  text-align: left;
+  background: #fff;
+}
+
+.trace-requirement span {
+  color: var(--rheem-red);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.trace-requirement small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.trace-panel {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.trace-panel h3,
+.trace-panel p {
+  margin: 0;
+}
+
+.trace-panel p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.trace-result {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.trace-result span {
+  color: var(--muted);
+}
+
+.trace-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .search-box {
   display: grid;
   gap: 6px;
@@ -732,11 +813,17 @@ h2 {
 .requirement-card {
   display: grid;
   gap: 10px;
+  width: 100%;
   padding: 14px;
   border: 1px solid var(--line);
   border-left: 5px solid var(--line);
   border-radius: 8px;
   background: #fff;
+  text-align: left;
+}
+
+.requirement-card:hover {
+  border-color: var(--rheem-red);
 }
 
 .must .requirement-card {
@@ -962,8 +1049,13 @@ h2 {
   }
 
   .dashboard-workbench,
+  .requirement-trace-layout,
   .report-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-requirements {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .call-panel,
@@ -1011,6 +1103,8 @@ h2 {
   .detail-card-grid,
   .coverage-grid,
   .dashboard-workbench,
+  .requirement-trace-layout,
+  .dashboard-requirements,
   .report-grid {
     grid-template-columns: 1fr;
   }
