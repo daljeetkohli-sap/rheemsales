@@ -228,6 +228,8 @@ let selectedStepIndex = 0;
 let visitStarted = false;
 let generatedOrder = null;
 let quoteReady = false;
+const completedSteps = new Set();
+const savedRecords = [];
 
 const steps = [
   {
@@ -406,7 +408,7 @@ function renderRequirements(term = "") {
   document.querySelector("#otherCount").textContent = counts["Other Haves"];
 }
 
-function renderSteps() {
+function renderSteps(activateSelected = true) {
   const list = document.querySelector("#stepList");
   list.innerHTML = "";
 
@@ -421,18 +423,21 @@ function renderSteps() {
         <span class="step-title">${step.title}</span>
         <span class="step-meta">${step.meta}</span>
       </span>
-      <span class="priority-chip">${step.priority}</span>
+      <span class="priority-chip">${completedSteps.has(index) ? "Done" : step.priority}</span>
     `;
     button.addEventListener("click", () => selectStep(index));
     item.appendChild(button);
     list.appendChild(item);
   });
 
-  selectStep(selectedStepIndex);
+  if (activateSelected) {
+    selectStep(selectedStepIndex);
+  }
 }
 
 function selectStep(index) {
   selectedStepIndex = index;
+  switchScreen("visit");
   document.querySelectorAll("#stepList button").forEach((button, buttonIndex) => {
     button.classList.toggle("active", buttonIndex === index);
   });
@@ -560,7 +565,10 @@ function wireModuleActions(title) {
   const completeStepBtn = document.querySelector("#completeStepBtn");
   if (completeStepBtn) {
     completeStepBtn.addEventListener("click", () => {
+      completedSteps.add(selectedStepIndex);
+      addRecord("Step completed", title);
       showToast(`${title} marked complete`);
+      renderSteps();
       goToNextStep();
     });
   }
@@ -571,6 +579,7 @@ function wireModuleActions(title) {
       const units = [...document.querySelectorAll("[data-order-input]")].reduce((total, input) => total + Number(input.value || 0), 0);
       generatedOrder = `${units} units`;
       document.querySelector("#metricOrder").textContent = units >= 8 ? "$27.2K" : "$18.7K";
+      addRecord("Recommended order", `${units} units created from stock take`);
       showToast(`Recommended order created for ${units} units`);
       selectStep(selectedStepIndex);
     });
@@ -580,6 +589,7 @@ function wireModuleActions(title) {
   if (saveBenchmarkBtn) {
     saveBenchmarkBtn.addEventListener("click", () => {
       const note = document.querySelector("#benchmarkNote").value.trim();
+      if (note) addRecord("Benchmark note", note);
       showToast(note ? "Benchmark note saved to visit notes" : "Add a note before saving");
     });
   }
@@ -589,6 +599,7 @@ function wireModuleActions(title) {
     saveCompetitorBtn.addEventListener("click", () => {
       const sku = document.querySelector("#competitorSku").value.trim();
       const price = document.querySelector("#competitorPrice").value.trim();
+      if (sku && price) addRecord("Competitor price", `${sku}: ${price}`);
       showToast(sku && price ? `Saved ${sku} at ${price}` : "Enter SKU and price to save");
     });
   }
@@ -597,6 +608,7 @@ function wireModuleActions(title) {
   if (generateQuoteBtn) {
     generateQuoteBtn.addEventListener("click", () => {
       quoteReady = true;
+      addRecord("Quote generated", `${customers[selectedCustomerIndex].name} replenishment quote`);
       showToast("Customer quote generated and ready to email");
       selectStep(selectedStepIndex);
     });
@@ -614,6 +626,88 @@ function showToast(message) {
   toast.classList.add("visible");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(() => toast.classList.remove("visible"), 2600);
+}
+
+function addRecord(type, detail) {
+  savedRecords.unshift({
+    type,
+    detail,
+    customer: customers[selectedCustomerIndex].name,
+    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  });
+  renderActivityFeed();
+  renderTaskBoard();
+  renderReports();
+}
+
+function switchScreen(screen) {
+  document.querySelectorAll("[data-screen-section]").forEach((section) => {
+    section.classList.toggle("active", section.dataset.screenSection === screen);
+  });
+  document.querySelectorAll("[data-screen]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.screen === screen);
+  });
+}
+
+function renderTaskBoard() {
+  const taskBoard = document.querySelector("#taskBoard");
+  taskBoard.innerHTML = steps
+    .map(
+      (step, index) => `
+        <article class="task-item">
+          <div>
+            <strong>${step.title}</strong>
+            <small>${completedSteps.has(index) ? "Completed" : step.meta}</small>
+          </div>
+          <button type="button" data-task-step="${index}">${completedSteps.has(index) ? "Review" : "Open"}</button>
+        </article>
+      `,
+    )
+    .join("");
+
+  taskBoard.querySelectorAll("[data-task-step]").forEach((button) => {
+    button.addEventListener("click", () => selectStep(Number(button.dataset.taskStep)));
+  });
+}
+
+function renderActivityFeed() {
+  const feed = document.querySelector("#activityFeed");
+  if (!savedRecords.length) {
+    feed.innerHTML = `
+      <article class="feed-item">
+        <strong>No saved activity yet</strong>
+        <small>Start a visit, complete a step, create an order, capture competitor pricing, or generate a quote.</small>
+      </article>
+    `;
+    return;
+  }
+
+  feed.innerHTML = savedRecords
+    .slice(0, 8)
+    .map(
+      (record) => `
+        <article class="feed-item">
+          <strong>${record.type}</strong>
+          <small>${record.customer} | ${record.time}</small>
+          <small>${record.detail}</small>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function renderReports() {
+  document.querySelector("#reportCompleted").textContent = `${completedSteps.size}/${steps.length}`;
+  document.querySelector("#reportRecords").textContent = savedRecords.length;
+  document.querySelector("#reportQuote").textContent = quoteReady ? "Ready" : "Pending";
+  document.querySelector("#reportOrder").textContent = generatedOrder || "Pending";
+  document.querySelector("#reportPreview").innerHTML = `
+    <article class="feed-item">
+      <strong>${customers[selectedCustomerIndex].name}</strong>
+      <small>${customers[selectedCustomerIndex].meta}</small>
+      <small>${completedSteps.size} visit steps completed, ${savedRecords.length} records saved, order ${generatedOrder || "pending"}, quote ${quoteReady ? "ready" : "pending"}.</small>
+    </article>
+  `;
 }
 
 function renderCustomers() {
@@ -649,15 +743,19 @@ function selectCustomer(index) {
   generatedOrder = null;
   quoteReady = false;
   renderCustomers();
-  selectStep(0);
+  renderTaskBoard();
+  renderReports();
+  selectedStepIndex = 0;
+  renderSteps(false);
+  switchScreen("dashboard");
   showToast(`${customer.name} loaded`);
 }
 
 function renderCoverage() {
   document.querySelector("#coverageGrid").innerHTML = coverage
     .map(
-      ([requirement, capability, priority]) => `
-        <article class="coverage-card">
+      ([requirement, capability, priority], index) => `
+        <article class="coverage-card" data-coverage-step="${Math.min(index, steps.length - 1)}">
           <span class="tag">${priority}</span>
           <strong>${capability}</strong>
           <p>${requirement}</p>
@@ -665,6 +763,10 @@ function renderCoverage() {
       `,
     )
     .join("");
+
+  document.querySelectorAll("[data-coverage-step]").forEach((card) => {
+    card.addEventListener("click", () => selectStep(Number(card.dataset.coverageStep)));
+  });
 }
 
 function renderActivityCalendar() {
@@ -695,16 +797,34 @@ document.querySelectorAll("[data-view]").forEach((button) => {
   });
 });
 
+document.querySelectorAll("[data-screen]").forEach((button) => {
+  button.addEventListener("click", () => switchScreen(button.dataset.screen));
+});
+
+document.querySelectorAll("[data-open-visit]").forEach((button) => {
+  button.addEventListener("click", () => selectStep(selectedStepIndex));
+});
+
+document.querySelector("#exportReportBtn").addEventListener("click", () => {
+  addRecord("Report exported", "Visit summary prepared for manager visibility");
+  showToast("Report summary exported");
+});
+
 document.querySelector("#startVisitBtn").addEventListener("click", () => {
   if (!visitStarted) {
     visitStarted = true;
     document.querySelector("#startVisitBtn").textContent = "Advance Step";
+    addRecord("Visit started", "Requirement-led call workflow opened");
     showToast("Visit started. Work through each requirement module.");
     selectStep(0);
     return;
   }
 
+  completedSteps.add(selectedStepIndex);
+  addRecord("Step completed", steps[selectedStepIndex].title);
   goToNextStep();
+  renderSteps(false);
+  renderTaskBoard();
   showToast(`Advanced to ${steps[selectedStepIndex].title}`);
 });
 
@@ -713,3 +833,7 @@ renderRequirements();
 renderSteps();
 renderActivityCalendar();
 renderCoverage();
+renderTaskBoard();
+renderActivityFeed();
+renderReports();
+switchScreen("dashboard");

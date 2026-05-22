@@ -17,10 +17,11 @@
       </div>
 
       <nav class="nav-list" aria-label="Primary">
-        <a href="#dashboard" class="active">Dashboard</a>
-        <a href="#call-flow">Call Flow</a>
-        <a href="#requirements">Requirements</a>
-        <a href="#activity">Activity Calendar</a>
+        <button type="button" class="active" data-screen="dashboard">Dashboard</button>
+        <button type="button" data-screen="visit">Visit Workspace</button>
+        <button type="button" data-screen="requirements">Requirements</button>
+        <button type="button" data-screen="activity">Activity Calendar</button>
+        <button type="button" data-screen="reports">Reports</button>
       </nav>
 
       <div class="rep-card">
@@ -31,7 +32,7 @@
     </aside>
 
     <main>
-      <section id="dashboard" class="topbar">
+      <section id="dashboard" class="topbar app-screen active" data-screen-section="dashboard">
         <div>
           <span class="eyebrow">Visit Workspace</span>
           <h1>Branch visit plan and execution</h1>
@@ -43,7 +44,7 @@
         </div>
       </section>
 
-      <section class="customer-panel" aria-label="Selected customer">
+      <section class="customer-panel app-screen active" aria-label="Selected customer" data-screen-section="dashboard">
         <div class="customer-hero">
           <div>
             <span class="eyebrow">Next Visit</span>
@@ -77,7 +78,29 @@
         </div>
       </section>
 
-      <section id="call-flow" class="workspace-grid">
+      <section class="dashboard-workbench app-screen active" data-screen-section="dashboard">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Today</span>
+              <h2>Task queue</h2>
+            </div>
+            <button type="button" data-open-visit>Open Visit</button>
+          </div>
+          <div class="task-board" id="taskBoard"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Session State</span>
+              <h2>Saved activity</h2>
+            </div>
+          </div>
+          <div class="activity-feed" id="activityFeed"></div>
+        </div>
+      </section>
+
+      <section id="call-flow" class="workspace-grid app-screen" data-screen-section="visit">
         <div class="panel call-panel">
           <div class="panel-heading">
             <div>
@@ -101,7 +124,7 @@
         </div>
       </section>
 
-      <section class="coverage-section" aria-label="Requirement coverage">
+      <section class="coverage-section app-screen" aria-label="Requirement coverage" data-screen-section="requirements">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Requirement Coverage</span>
@@ -111,7 +134,7 @@
         <div class="coverage-grid" id="coverageGrid"></div>
       </section>
 
-      <section id="requirements" class="requirements-section">
+      <section id="requirements" class="requirements-section app-screen" data-screen-section="requirements">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Requirement Priority</span>
@@ -147,7 +170,7 @@
         </div>
       </section>
 
-      <section id="activity" class="activity-section">
+      <section id="activity" class="activity-section app-screen" data-screen-section="activity">
         <div class="section-heading">
           <div>
             <span class="eyebrow">Dummy Data</span>
@@ -160,6 +183,38 @@
           </div>
         </div>
         <div class="calendar-table" id="activityCalendar"></div>
+      </section>
+
+      <section class="reports-section app-screen" data-screen-section="reports">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Reporting</span>
+            <h2>Visit performance and outputs</h2>
+          </div>
+          <button type="button" id="exportReportBtn">Export summary</button>
+        </div>
+        <div class="report-grid">
+          <article>
+            <span>Completed Steps</span>
+            <strong id="reportCompleted">0/8</strong>
+          </article>
+          <article>
+            <span>Saved Records</span>
+            <strong id="reportRecords">0</strong>
+          </article>
+          <article>
+            <span>Quote Status</span>
+            <strong id="reportQuote">Pending</strong>
+          </article>
+          <article>
+            <span>Order Status</span>
+            <strong id="reportOrder">Pending</strong>
+          </article>
+        </div>
+        <div class="panel report-panel">
+          <h3>Report preview</h3>
+          <div id="reportPreview" class="report-preview"></div>
+        </div>
       </section>
 
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
