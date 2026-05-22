@@ -768,6 +768,8 @@ function switchScreen(screen) {
   document.querySelectorAll("[data-screen]").forEach((button) => {
     button.classList.toggle("active", button.dataset.screen === screen);
   });
+  const mobileSelect = document.querySelector("#mobileScreenSelect");
+  if (mobileSelect) mobileSelect.value = screen;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -805,6 +807,14 @@ function setTimeframe(view) {
   });
   renderTaskBoard();
   showToast(`${config.label} loaded`);
+}
+
+function updateDeviceBadge() {
+  const width = window.innerWidth;
+  let label = "Desktop layout";
+  if (width <= 760) label = "Mobile layout";
+  else if (width <= 1100) label = "Tablet layout";
+  document.querySelector("#deviceBadge").textContent = label;
 }
 
 function renderActivityFeed() {
@@ -1000,6 +1010,10 @@ document.querySelectorAll("[data-screen]").forEach((button) => {
   button.addEventListener("click", () => switchScreen(button.dataset.screen));
 });
 
+document.querySelector("#mobileScreenSelect").addEventListener("change", (event) => {
+  switchScreen(event.target.value);
+});
+
 document.querySelectorAll("[data-open-visit]").forEach((button) => {
   button.addEventListener("click", () => selectStep(selectedStepIndex));
 });
@@ -1018,6 +1032,8 @@ document.addEventListener("click", (event) => {
     saveSelectedCalendarActivity();
   }
 });
+
+window.addEventListener("resize", updateDeviceBadge);
 
 document.querySelector("#startVisitBtn").addEventListener("click", () => {
   if (!visitStarted) {
@@ -1048,3 +1064,4 @@ renderActivityFeed();
 renderReports();
 switchScreen("dashboard");
 setTimeframe("cycle");
+updateDeviceBadge();

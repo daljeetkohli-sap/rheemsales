@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rheem Call Steps Planner</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=mobile-2" />
   </head>
   <body>
     <aside class="sidebar">
@@ -15,6 +15,17 @@
           <strong>Call Steps Planner</strong>
         </div>
       </div>
+
+      <label class="mobile-screen-picker">
+        <span>Screen</span>
+        <select id="mobileScreenSelect">
+          <option value="dashboard">Dashboard</option>
+          <option value="visit">Visit Workspace</option>
+          <option value="requirements">Requirements</option>
+          <option value="activity">Activity Calendar</option>
+          <option value="reports">Reports</option>
+        </select>
+      </label>
 
       <nav class="nav-list" aria-label="Primary">
         <button type="button" class="active" data-screen="dashboard">Dashboard</button>
@@ -37,6 +48,7 @@
           <span class="eyebrow" id="dashboardModeLabel">Cycle View</span>
           <h1 id="dashboardTitle">Branch visit plan and execution</h1>
           <p class="dashboard-subtitle" id="dashboardSubtitle">Full sales-cycle plan across all requirement-led visit steps.</p>
+          <span class="device-badge" id="deviceBadge">Desktop layout</span>
         </div>
         <div class="top-actions" aria-label="Visit actions">
           <button type="button" data-view="today">Today</button>
@@ -245,6 +257,6 @@
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=mobile-2"></script>
   </body>
 </html>
