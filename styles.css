@@ -211,6 +211,13 @@ h2 {
   font-size: 22px;
 }
 
+.dashboard-subtitle {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .top-actions {
   display: flex;
   gap: 8px;

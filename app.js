@@ -228,8 +228,33 @@ let selectedStepIndex = 0;
 let visitStarted = false;
 let generatedOrder = null;
 let quoteReady = false;
+let activeTimeframe = "cycle";
 const completedSteps = new Set();
 const savedRecords = [];
+
+const timeframeViews = {
+  today: {
+    label: "Today View",
+    title: "Today's branch visit execution",
+    subtitle: "Focus on the steps due for the selected customer visit right now.",
+    taskLimit: 4,
+    taskMeta: "Due today",
+  },
+  week: {
+    label: "Week View",
+    title: "This week's customer call plan",
+    subtitle: "Review the priority work across this week's visits and follow-ups.",
+    taskLimit: 6,
+    taskMeta: "Due this week",
+  },
+  cycle: {
+    label: "Cycle View",
+    title: "Branch visit plan and execution",
+    subtitle: "Full sales-cycle plan across all requirement-led visit steps.",
+    taskLimit: 8,
+    taskMeta: "Sales cycle",
+  },
+};
 
 const steps = [
   {
@@ -651,13 +676,15 @@ function switchScreen(screen) {
 
 function renderTaskBoard() {
   const taskBoard = document.querySelector("#taskBoard");
+  const timeframe = timeframeViews[activeTimeframe];
   taskBoard.innerHTML = steps
+    .slice(0, timeframe.taskLimit)
     .map(
       (step, index) => `
         <article class="task-item">
           <div>
             <strong>${step.title}</strong>
-            <small>${completedSteps.has(index) ? "Completed" : step.meta}</small>
+            <small>${completedSteps.has(index) ? "Completed" : `${timeframe.taskMeta} | ${step.meta}`}</small>
           </div>
           <button type="button" data-task-step="${index}">${completedSteps.has(index) ? "Review" : "Open"}</button>
         </article>
@@ -668,6 +695,19 @@ function renderTaskBoard() {
   taskBoard.querySelectorAll("[data-task-step]").forEach((button) => {
     button.addEventListener("click", () => selectStep(Number(button.dataset.taskStep)));
   });
+}
+
+function setTimeframe(view) {
+  activeTimeframe = view;
+  const config = timeframeViews[view];
+  document.querySelector("#dashboardModeLabel").textContent = config.label;
+  document.querySelector("#dashboardTitle").textContent = config.title;
+  document.querySelector("#dashboardSubtitle").textContent = config.subtitle;
+  document.querySelectorAll("[data-view]").forEach((button) => {
+    button.classList.toggle("selected", button.dataset.view === view);
+  });
+  renderTaskBoard();
+  showToast(`${config.label} loaded`);
 }
 
 function renderActivityFeed() {
@@ -792,8 +832,7 @@ document.querySelector("#requirementSearch").addEventListener("input", (event) =
 
 document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
-    document.querySelectorAll("[data-view]").forEach((item) => item.classList.remove("selected"));
-    button.classList.add("selected");
+    setTimeframe(button.dataset.view);
   });
 });
 
@@ -837,3 +876,4 @@ renderTaskBoard();
 renderActivityFeed();
 renderReports();
 switchScreen("dashboard");
+setTimeframe("cycle");
