@@ -66,6 +66,14 @@ button.selected {
   color: var(--rheem-red);
 }
 
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(200, 36, 47, 0.28);
+  outline-offset: 2px;
+}
+
 .sidebar {
   position: sticky;
   top: 0;
@@ -208,6 +216,18 @@ h2 {
 .customer-hero p {
   margin-bottom: 0;
   color: var(--muted);
+}
+
+.customer-switcher {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.customer-switcher button {
+  white-space: nowrap;
+  background: #fbfcfd;
 }
 
 .risk-pill,
@@ -377,6 +397,13 @@ h2 {
   background: #fff;
 }
 
+.module-workspace-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .module-workspace h3 {
   margin: 0;
   font-size: 17px;
@@ -432,6 +459,64 @@ h2 {
   width: 18px;
   height: 18px;
   accent-color: var(--rheem-red);
+}
+
+.quantity-editor,
+.capture-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.quantity-editor label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.quantity-editor input,
+.capture-form input,
+.module-workspace textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: #fff;
+}
+
+.module-workspace textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.capture-form button {
+  min-width: 100%;
+}
+
+.toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 20;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #111820;
+  color: #fff;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .coverage-section {
@@ -793,6 +878,16 @@ h2 {
 
   .data-row span + span {
     border-top: 1px solid var(--line);
+  }
+
+  .quantity-editor,
+  .capture-form {
+    grid-template-columns: 1fr;
+  }
+
+  .toast {
+    right: 14px;
+    bottom: 14px;
   }
 }
 

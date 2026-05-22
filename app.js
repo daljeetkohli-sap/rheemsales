@@ -184,6 +184,51 @@ const requirements = [
   },
 ];
 
+const customers = [
+  {
+    name: "Tradelink Parramatta",
+    meta: "RSS branch | High importance | Fortnightly call cycle",
+    risk: "At risk: Medium",
+    ytd: "$1.28M",
+    ytdTrend: "+8.4% vs YA",
+    mtd: "$146K",
+    mtdTrend: "-3.1% vs region",
+    gaps: "7 SKUs",
+    urgent: "3 urgent replenishments",
+    order: "$18.7K",
+  },
+  {
+    name: "Reece Blacktown",
+    meta: "Merchant | Strategic account | Weekly call cycle",
+    risk: "At risk: Low",
+    ytd: "$2.04M",
+    ytdTrend: "+14.2% vs YA",
+    mtd: "$238K",
+    mtdTrend: "+6.5% vs region",
+    gaps: "4 SKUs",
+    urgent: "1 urgent replenishment",
+    order: "$11.4K",
+  },
+  {
+    name: "PlumbSmart Penrith",
+    meta: "Plumber customer | Growth account | Monthly call cycle",
+    risk: "At risk: High",
+    ytd: "$482K",
+    ytdTrend: "-6.8% vs YA",
+    mtd: "$39K",
+    mtdTrend: "-9.2% vs region",
+    gaps: "9 SKUs",
+    urgent: "5 urgent replenishments",
+    order: "$24.1K",
+  },
+];
+
+let selectedCustomerIndex = 0;
+let selectedStepIndex = 0;
+let visitStarted = false;
+let generatedOrder = null;
+let quoteReady = false;
+
 const steps = [
   {
     title: "Sales Cycle Planning",
@@ -369,7 +414,7 @@ function renderSteps() {
     const item = document.createElement("li");
     const button = document.createElement("button");
     button.type = "button";
-    button.className = index === 0 ? "active" : "";
+    button.className = index === selectedStepIndex ? "active" : "";
     button.innerHTML = `
       <span class="step-number">${index + 1}</span>
       <span>
@@ -383,10 +428,11 @@ function renderSteps() {
     list.appendChild(item);
   });
 
-  selectStep(0);
+  selectStep(selectedStepIndex);
 }
 
 function selectStep(index) {
+  selectedStepIndex = index;
   document.querySelectorAll("#stepList button").forEach((button, buttonIndex) => {
     button.classList.toggle("active", buttonIndex === index);
   });
@@ -415,6 +461,7 @@ function selectStep(index) {
     </div>
     ${renderModuleWorkspace(step.title)}
   `;
+  wireModuleActions(step.title);
 }
 
 function renderRows(rows) {
@@ -435,11 +482,20 @@ function renderRows(rows) {
 
 function renderModuleWorkspace(title) {
   if (title === "Stock Take") {
+    const totalLabel = generatedOrder ? `Recommended order created: ${generatedOrder}` : "No order created yet";
     return `
       <section class="module-workspace">
-        <h3>Live stock take</h3>
+        <div class="module-workspace-heading">
+          <h3>Live stock take</h3>
+          <span class="tag">${totalLabel}</span>
+        </div>
         ${renderRows(stockRows)}
-        <button type="button">Create recommended order</button>
+        <div class="quantity-editor">
+          <label>Rheem 250L HP <input type="number" min="0" value="3" data-order-input /></label>
+          <label>Stellar 315L <input type="number" min="0" value="2" data-order-input /></label>
+          <label>Longhorn Kit <input type="number" min="0" value="2" data-order-input /></label>
+        </div>
+        <button type="button" id="createOrderBtn">Create recommended order</button>
       </section>
     `;
   }
@@ -449,7 +505,8 @@ function renderModuleWorkspace(title) {
       <section class="module-workspace">
         <h3>Sales review by category</h3>
         ${renderRows(salesRows)}
-        <button type="button">Add benchmark note</button>
+        <textarea id="benchmarkNote" placeholder="Add customer-facing benchmark note"></textarea>
+        <button type="button" id="saveBenchmarkBtn">Save benchmark note</button>
       </section>
     `;
   }
@@ -459,7 +516,11 @@ function renderModuleWorkspace(title) {
       <section class="module-workspace">
         <h3>Competitor price capture</h3>
         ${renderRows(competitorRows)}
-        <button type="button">Upload price screenshot</button>
+        <div class="capture-form">
+          <input id="competitorSku" type="text" placeholder="Competitor SKU" />
+          <input id="competitorPrice" type="text" placeholder="Shelf price" />
+          <button type="button" id="saveCompetitorBtn">Save competitor price</button>
+        </div>
       </section>
     `;
   }
@@ -467,13 +528,17 @@ function renderModuleWorkspace(title) {
   if (title === "Quote and Follow-up") {
     return `
       <section class="module-workspace">
-        <h3>Follow-up actions</h3>
+        <div class="module-workspace-heading">
+          <h3>Follow-up actions</h3>
+          <span class="tag">${quoteReady ? "Quote generated" : "Quote not generated"}</span>
+        </div>
         <div class="action-checklist">
           <label><input type="checkbox" checked /> Generate replenishment quote</label>
           <label><input type="checkbox" checked /> Email quote to customer</label>
           <label><input type="checkbox" /> Create training task</label>
           <label><input type="checkbox" /> Schedule next visit</label>
         </div>
+        <button type="button" id="generateQuoteBtn">Generate quote</button>
       </section>
     `;
   }
@@ -486,8 +551,106 @@ function renderModuleWorkspace(title) {
         <label><input type="checkbox" /> Capture customer note</label>
         <label><input type="checkbox" /> Add follow-up task</label>
       </div>
+      <button type="button" id="completeStepBtn">Mark step complete</button>
     </section>
   `;
+}
+
+function wireModuleActions(title) {
+  const completeStepBtn = document.querySelector("#completeStepBtn");
+  if (completeStepBtn) {
+    completeStepBtn.addEventListener("click", () => {
+      showToast(`${title} marked complete`);
+      goToNextStep();
+    });
+  }
+
+  const createOrderBtn = document.querySelector("#createOrderBtn");
+  if (createOrderBtn) {
+    createOrderBtn.addEventListener("click", () => {
+      const units = [...document.querySelectorAll("[data-order-input]")].reduce((total, input) => total + Number(input.value || 0), 0);
+      generatedOrder = `${units} units`;
+      document.querySelector("#metricOrder").textContent = units >= 8 ? "$27.2K" : "$18.7K";
+      showToast(`Recommended order created for ${units} units`);
+      selectStep(selectedStepIndex);
+    });
+  }
+
+  const saveBenchmarkBtn = document.querySelector("#saveBenchmarkBtn");
+  if (saveBenchmarkBtn) {
+    saveBenchmarkBtn.addEventListener("click", () => {
+      const note = document.querySelector("#benchmarkNote").value.trim();
+      showToast(note ? "Benchmark note saved to visit notes" : "Add a note before saving");
+    });
+  }
+
+  const saveCompetitorBtn = document.querySelector("#saveCompetitorBtn");
+  if (saveCompetitorBtn) {
+    saveCompetitorBtn.addEventListener("click", () => {
+      const sku = document.querySelector("#competitorSku").value.trim();
+      const price = document.querySelector("#competitorPrice").value.trim();
+      showToast(sku && price ? `Saved ${sku} at ${price}` : "Enter SKU and price to save");
+    });
+  }
+
+  const generateQuoteBtn = document.querySelector("#generateQuoteBtn");
+  if (generateQuoteBtn) {
+    generateQuoteBtn.addEventListener("click", () => {
+      quoteReady = true;
+      showToast("Customer quote generated and ready to email");
+      selectStep(selectedStepIndex);
+    });
+  }
+}
+
+function goToNextStep() {
+  const nextIndex = Math.min(selectedStepIndex + 1, steps.length - 1);
+  selectStep(nextIndex);
+}
+
+function showToast(message) {
+  const toast = document.querySelector("#toast");
+  toast.textContent = message;
+  toast.classList.add("visible");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => toast.classList.remove("visible"), 2600);
+}
+
+function renderCustomers() {
+  const switcher = document.querySelector("#customerSwitcher");
+  switcher.innerHTML = customers
+    .map(
+      (customer, index) => `
+        <button type="button" class="${index === selectedCustomerIndex ? "selected" : ""}" data-customer-index="${index}">
+          ${customer.name}
+        </button>
+      `,
+    )
+    .join("");
+
+  switcher.querySelectorAll("[data-customer-index]").forEach((button) => {
+    button.addEventListener("click", () => selectCustomer(Number(button.dataset.customerIndex)));
+  });
+}
+
+function selectCustomer(index) {
+  selectedCustomerIndex = index;
+  const customer = customers[index];
+  document.querySelector("#customerName").textContent = customer.name;
+  document.querySelector("#customerMeta").textContent = customer.meta;
+  document.querySelector("#customerRisk").textContent = customer.risk;
+  document.querySelector("#metricYtd").textContent = customer.ytd;
+  document.querySelector("#metricYtdTrend").textContent = customer.ytdTrend;
+  document.querySelector("#metricMtd").textContent = customer.mtd;
+  document.querySelector("#metricMtdTrend").textContent = customer.mtdTrend;
+  document.querySelector("#metricGaps").textContent = customer.gaps;
+  document.querySelector("#metricUrgent").textContent = customer.urgent;
+  document.querySelector("#metricOrder").textContent = customer.order;
+  generatedOrder = null;
+  quoteReady = false;
+  renderCustomers();
+  selectStep(0);
+  showToast(`${customer.name} loaded`);
 }
 
 function renderCoverage() {
@@ -532,6 +695,20 @@ document.querySelectorAll("[data-view]").forEach((button) => {
   });
 });
 
+document.querySelector("#startVisitBtn").addEventListener("click", () => {
+  if (!visitStarted) {
+    visitStarted = true;
+    document.querySelector("#startVisitBtn").textContent = "Advance Step";
+    showToast("Visit started. Work through each requirement module.");
+    selectStep(0);
+    return;
+  }
+
+  goToNextStep();
+  showToast(`Advanced to ${steps[selectedStepIndex].title}`);
+});
+
+renderCustomers();
 renderRequirements();
 renderSteps();
 renderActivityCalendar();

@@ -47,30 +47,31 @@
         <div class="customer-hero">
           <div>
             <span class="eyebrow">Next Visit</span>
-            <h2>Tradelink Parramatta</h2>
-            <p>RSS branch | High importance | Fortnightly call cycle</p>
+            <h2 id="customerName">Tradelink Parramatta</h2>
+            <p id="customerMeta">RSS branch | High importance | Fortnightly call cycle</p>
           </div>
-          <div class="risk-pill">At risk: Medium</div>
+          <div class="risk-pill" id="customerRisk">At risk: Medium</div>
         </div>
+        <div class="customer-switcher" id="customerSwitcher" aria-label="Customer selector"></div>
         <div class="metric-grid">
           <article>
             <span>YTD Sales</span>
-            <strong>$1.28M</strong>
-            <small>+8.4% vs YA</small>
+            <strong id="metricYtd">$1.28M</strong>
+            <small id="metricYtdTrend">+8.4% vs YA</small>
           </article>
           <article>
             <span>MTD Sales</span>
-            <strong>$146K</strong>
-            <small>-3.1% vs region</small>
+            <strong id="metricMtd">$146K</strong>
+            <small id="metricMtdTrend">-3.1% vs region</small>
           </article>
           <article>
             <span>Stock Gaps</span>
-            <strong>7 SKUs</strong>
-            <small>3 urgent replenishments</small>
+            <strong id="metricGaps">7 SKUs</strong>
+            <small id="metricUrgent">3 urgent replenishments</small>
           </article>
           <article>
             <span>Next Best Order</span>
-            <strong>$18.7K</strong>
+            <strong id="metricOrder">$18.7K</strong>
             <small>Projected value add</small>
           </article>
         </div>
@@ -83,7 +84,7 @@
               <span class="eyebrow">Template Driven</span>
               <h2>Steps of the call</h2>
             </div>
-            <button type="button">Start Visit</button>
+            <button type="button" id="startVisitBtn">Start Visit</button>
           </div>
           <ol class="step-list" id="stepList"></ol>
         </div>
@@ -160,6 +161,8 @@
         </div>
         <div class="calendar-table" id="activityCalendar"></div>
       </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </main>
 
     <script src="app.js"></script>
