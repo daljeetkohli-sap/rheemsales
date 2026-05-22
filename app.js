@@ -389,6 +389,17 @@ const activities = [
   ["Rheem Rapid", "", "10 new signups", "", "10 new signups", "", "10 new signups", "", "10 new signups", "", "10 new signups", "", ""],
 ];
 
+const activityModuleMap = {
+  "Stock Check": "Stock Take",
+  "Recommended Order": "Stock Take",
+  "YTD Sales Review": "Sales Review",
+  "NPD Launches": "Promotions and Training",
+  "Competitor Pricing": "Competitor Capture",
+  Training: "Promotions and Training",
+  "Rheem Rewards": "Promotions and Training",
+  "Rheem Rapid": "Promotions and Training",
+};
+
 const byPriority = {
   "Must Have": document.querySelector("#mustList"),
   "Should Have": document.querySelector("#shouldList"),
@@ -818,12 +829,51 @@ function renderActivityCalendar() {
       </thead>
       <tbody>
         ${activities
-          .map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`)
+          .map((row) => {
+            const activity = row[0];
+            return `<tr>${row
+              .map((cell, index) => {
+                if (index === 0) return `<td>${cell}</td>`;
+                if (!cell) return "<td></td>";
+                return `
+                  <td>
+                    <button type="button" class="calendar-event" data-activity="${activity}" data-month="${months[index]}" data-detail="${cell}">
+                      ${cell}
+                    </button>
+                  </td>
+                `;
+              })
+              .join("")}</tr>`;
+          })
           .join("")}
       </tbody>
     </table>
   `;
   document.querySelector("#activityCalendar").innerHTML = html;
+  document.querySelectorAll(".calendar-event").forEach((button) => {
+    button.addEventListener("click", () => selectCalendarActivity(button.dataset));
+  });
+}
+
+function selectCalendarActivity(activity) {
+  const moduleName = activityModuleMap[activity.activity] || "Call Planning";
+  const moduleIndex = steps.findIndex((step) => step.title === moduleName);
+  document.querySelector("#calendarDetail").innerHTML = `
+    <span class="eyebrow">${activity.month} Activity</span>
+    <h3>${activity.activity}</h3>
+    <p>${activity.detail}</p>
+    <div class="calendar-actions">
+      <button type="button" id="openCalendarModuleBtn">Open ${moduleName}</button>
+      <button type="button" id="saveCalendarActivityBtn">Add to visit plan</button>
+    </div>
+  `;
+  document.querySelector("#openCalendarModuleBtn").addEventListener("click", () => {
+    selectStep(Math.max(moduleIndex, 0));
+  });
+  document.querySelector("#saveCalendarActivityBtn").addEventListener("click", () => {
+    addRecord("Calendar activity", `${activity.month}: ${activity.activity} - ${activity.detail}`);
+    showToast(`${activity.activity} added to visit plan`);
+  });
 }
 
 document.querySelector("#requirementSearch").addEventListener("input", (event) => {
