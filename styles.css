@@ -169,6 +169,10 @@ main {
   display: grid;
 }
 
+main > .app-screen:not(.active) {
+  display: none;
+}
+
 .topbar.app-screen.active {
   display: flex;
 }

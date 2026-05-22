@@ -229,6 +229,7 @@ let visitStarted = false;
 let generatedOrder = null;
 let quoteReady = false;
 let activeTimeframe = "cycle";
+let selectedCalendarActivity = null;
 const completedSteps = new Set();
 const savedRecords = [];
 
@@ -683,6 +684,7 @@ function switchScreen(screen) {
   document.querySelectorAll("[data-screen]").forEach((button) => {
     button.classList.toggle("active", button.dataset.screen === screen);
   });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function renderTaskBoard() {
@@ -856,8 +858,12 @@ function renderActivityCalendar() {
 }
 
 function selectCalendarActivity(activity) {
+  selectedCalendarActivity = {
+    activity: activity.activity,
+    month: activity.month,
+    detail: activity.detail,
+  };
   const moduleName = activityModuleMap[activity.activity] || "Call Planning";
-  const moduleIndex = steps.findIndex((step) => step.title === moduleName);
   document.querySelector("#calendarDetail").innerHTML = `
     <span class="eyebrow">${activity.month} Activity</span>
     <h3>${activity.activity}</h3>
@@ -875,19 +881,25 @@ function selectCalendarActivity(activity) {
       <span>Use one of the buttons above to navigate or create a saved task.</span>
     </div>
   `;
-  document.querySelector("#openCalendarModuleBtn").addEventListener("click", () => {
-    addRecord("Opened module", `${activity.month}: ${moduleName} opened from calendar`);
-    showToast(`Opening ${moduleName}`);
-    selectStep(Math.max(moduleIndex, 0));
-  });
-  document.querySelector("#saveCalendarActivityBtn").addEventListener("click", () => {
-    addRecord("Calendar activity", `${activity.month}: ${activity.activity} - ${activity.detail}`);
-    document.querySelector("#calendarOperationLog").innerHTML = `
-      <strong>Task saved</strong>
-      <span>${activity.activity} for ${activity.month} has been added to ${customers[selectedCustomerIndex].name}'s visit plan. You can see it on Dashboard > Saved activity and Reports > Saved Records.</span>
-    `;
-    showToast(`${activity.activity} added to visit plan`);
-  });
+}
+
+function openSelectedCalendarModule() {
+  if (!selectedCalendarActivity) return;
+  const moduleName = activityModuleMap[selectedCalendarActivity.activity] || "Call Planning";
+  const moduleIndex = steps.findIndex((step) => step.title === moduleName);
+  addRecord("Opened module", `${selectedCalendarActivity.month}: ${moduleName} opened from calendar`);
+  showToast(`Opening ${moduleName}`);
+  selectStep(Math.max(moduleIndex, 0));
+}
+
+function saveSelectedCalendarActivity() {
+  if (!selectedCalendarActivity) return;
+  addRecord("Calendar activity", `${selectedCalendarActivity.month}: ${selectedCalendarActivity.activity} - ${selectedCalendarActivity.detail}`);
+  document.querySelector("#calendarOperationLog").innerHTML = `
+    <strong>Task saved</strong>
+    <span>${selectedCalendarActivity.activity} for ${selectedCalendarActivity.month} has been added to ${customers[selectedCustomerIndex].name}'s visit plan. You can see it on Dashboard > Saved activity and Reports > Saved Records.</span>
+  `;
+  showToast(`${selectedCalendarActivity.activity} added to visit plan`);
 }
 
 document.querySelector("#requirementSearch").addEventListener("input", (event) => {
@@ -911,6 +923,16 @@ document.querySelectorAll("[data-open-visit]").forEach((button) => {
 document.querySelector("#exportReportBtn").addEventListener("click", () => {
   addRecord("Report exported", "Visit summary prepared for manager visibility");
   showToast("Report summary exported");
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest("#openCalendarModuleBtn")) {
+    openSelectedCalendarModule();
+  }
+
+  if (event.target.closest("#saveCalendarActivityBtn")) {
+    saveSelectedCalendarActivity();
+  }
 });
 
 document.querySelector("#startVisitBtn").addEventListener("click", () => {
