@@ -31,6 +31,19 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body,
+button,
+input {
+  -webkit-text-size-adjust: 100%;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
 button,
 input {
   font: inherit;
@@ -41,9 +54,10 @@ button {
   background: var(--panel);
   color: var(--ink);
   border-radius: 6px;
-  min-height: 38px;
+  min-height: 44px;
   padding: 0 14px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 button:hover,
@@ -102,6 +116,9 @@ button.selected {
   text-decoration: none;
   padding: 11px 12px;
   border-radius: 6px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .nav-list a:hover,
@@ -214,7 +231,7 @@ h2 {
 }
 
 .metric-grid article {
-  min-height: 118px;
+  min-height: 112px;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -234,7 +251,7 @@ h2 {
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: minmax(360px, 0.9fr) minmax(420px, 1.1fr);
+  grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
   gap: 22px;
 }
 
@@ -342,7 +359,7 @@ h2 {
 
 .search-box input {
   width: 100%;
-  height: 40px;
+  height: 44px;
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 0 12px;
@@ -525,20 +542,72 @@ h2 {
   }
 
   .sidebar {
-    position: static;
+    position: sticky;
     height: auto;
+    z-index: 5;
+    padding: 16px 18px;
+    gap: 14px;
   }
 
-  .workspace-grid,
+  .brand {
+    align-items: flex-start;
+  }
+
+  .nav-list {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+
+  .nav-list a {
+    white-space: nowrap;
+  }
+
+  .rep-card {
+    display: none;
+  }
+
   .requirements-grid,
   .metric-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .call-panel,
+  .detail-panel {
+    min-height: auto;
   }
 }
 
 @media (max-width: 760px) {
   main {
-    padding: 18px;
+    gap: 16px;
+    padding: 14px;
+  }
+
+  h1 {
+    font-size: 30px;
+    line-height: 1.08;
+  }
+
+  h2 {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .sidebar {
+    top: 0;
+    padding: 12px 14px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
   }
 
   .topbar,
@@ -554,12 +623,64 @@ h2 {
     grid-template-columns: 1fr;
   }
 
+  .customer-panel,
+  .panel,
+  .activity-section {
+    padding: 16px;
+  }
+
+  .top-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .top-actions button {
+    padding: 0 8px;
+  }
+
   .step-list button {
     grid-template-columns: 34px minmax(0, 1fr);
+    min-height: 76px;
   }
 
   .priority-chip {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .priority-column {
+    min-height: auto;
+  }
+
+  .requirement-list {
+    max-height: none;
+  }
+
+  .calendar-table table {
+    min-width: 760px;
+  }
+}
+
+@media (max-width: 430px) {
+  .brand strong {
+    font-size: 15px;
+  }
+
+  .nav-list {
+    margin-inline: -4px;
+  }
+
+  .metric-grid strong {
+    font-size: 24px;
+  }
+
+  .card-tags {
+    align-items: flex-start;
+  }
+
+  .tag {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 }
